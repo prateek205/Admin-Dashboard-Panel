@@ -1,0 +1,15 @@
+{
+  "name": "admin-dashboard-backend",
+  "version": "1.0.0",
+  "description": "This backend will run smooth services between client and server ",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
