@@ -3,40 +3,38 @@ const mongoose = require('mongoose');
 const productSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Product name is required'],
+    required: true,
     trim: true
   },
   description: {
     type: String,
-    required: [true, 'Description is required']
+    required: true
   },
   price: {
     type: Number,
-    required: [true, 'Price is required'],
-    min: [0, 'Price cannot be negative']
+    required: true,
+    min: 0
   },
   category: {
     type: String,
-    required: [true, 'Category is required']
+    required: true
   },
   image: {
     type: String,
-    required: [true, 'Image is required']
+    default: ''
   },
   stock: {
     type: Number,
     required: true,
-    default: 0,
-    min: [0, 'Stock cannot be negative']
+    min: 0,
+    default: 0
   },
-  featured: {
-    type: Boolean,
-    default: false
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('Product', productSchema);
