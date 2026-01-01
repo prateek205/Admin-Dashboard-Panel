@@ -22,7 +22,7 @@ import {
   Edit as EditIcon,
   Inventory2 as Inventory2Icon,
   Category as CategoryIcon,
-  AttachMoney as AttachMoneyIcon,
+  CurrencyRupee as CurrencyRupeeIcon,
   CalendarToday as CalendarTodayIcon,
   Person as PersonIcon,
   TrendingUp as TrendingUpIcon,
@@ -31,8 +31,9 @@ import {
   Cancel as CancelIcon,
 } from '@mui/icons-material';
 import Navbar from '../components/navbar';
+import PriceDisplay from '../components/priceDisplay';
+import { formatDateTime } from '../utils/formatter';
 import axios from 'axios';
-import { format } from 'date-fns';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -112,6 +113,7 @@ const ProductDetail = () => {
   }
 
   const status = getStockStatus(product.stock);
+  const inventoryValue = product.price * product.stock;
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -154,7 +156,7 @@ const ProductDetail = () => {
                   sx={{ fontWeight: 600 }}
                 />
                 <Typography variant="body2" color="textSecondary">
-                  Product ID: {product._id}
+                  Product ID: {product._id.slice(-8)}
                 </Typography>
               </Box>
             </Box>
@@ -251,14 +253,17 @@ const ProductDetail = () => {
 
                 <Box sx={{ mb: 2 }}>
                   <Box display="flex" alignItems="center" gap={1} mb={1}>
-                    <AttachMoneyIcon fontSize="small" color="primary" />
+                    <CurrencyRupeeIcon fontSize="small" color="primary" />
                     <Typography variant="body2" color="textSecondary">
                       Price
                     </Typography>
                   </Box>
-                  <Typography variant="h4" fontWeight={700} color="primary.main">
-                    ${product.price.toFixed(2)}
-                  </Typography>
+                  <PriceDisplay 
+                    price={product.price} 
+                    variant="h4" 
+                    fontWeight={700} 
+                    color="primary.main"
+                  />
                 </Box>
 
                 <Divider sx={{ my: 2 }} />
@@ -280,6 +285,23 @@ const ProductDetail = () => {
 
                 <Divider sx={{ my: 2 }} />
 
+                <Box sx={{ mb: 2 }}>
+                  <Box display="flex" alignItems="center" gap={1} mb={1}>
+                    <CurrencyRupeeIcon fontSize="small" color="primary" />
+                    <Typography variant="body2" color="textSecondary">
+                      Inventory Value
+                    </Typography>
+                  </Box>
+                  <PriceDisplay 
+                    price={inventoryValue} 
+                    variant="h6" 
+                    fontWeight={700} 
+                    color="info.main"
+                  />
+                </Box>
+
+                <Divider sx={{ my: 2 }} />
+
                 <Box>
                   <Box display="flex" alignItems="center" gap={1} mb={1}>
                     <CalendarTodayIcon fontSize="small" color="primary" />
@@ -288,12 +310,26 @@ const ProductDetail = () => {
                     </Typography>
                   </Box>
                   <Typography variant="body2" fontWeight={500}>
-                    {format(new Date(product.createdAt), 'MMMM dd, yyyy')}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
-                    {format(new Date(product.createdAt), 'hh:mm a')}
+                    {formatDateTime(product.createdAt)}
                   </Typography>
                 </Box>
+
+                {product.updatedAt !== product.createdAt && (
+                  <>
+                    <Divider sx={{ my: 2 }} />
+                    <Box>
+                      <Box display="flex" alignItems="center" gap={1} mb={1}>
+                        <CalendarTodayIcon fontSize="small" color="primary" />
+                        <Typography variant="body2" color="textSecondary">
+                          Last Updated
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" fontWeight={500}>
+                        {formatDateTime(product.updatedAt)}
+                      </Typography>
+                    </Box>
+                  </>
+                )}
 
                 {product.createdBy && (
                   <>
@@ -343,9 +379,9 @@ const ProductDetail = () => {
                       fullWidth
                       variant="contained"
                       sx={{ mt: 2 }}
-                      onClick={() => navigate(`/products/edit/${product._id}`)}
+                      onClick={() => navigate(`/products`)}
                     >
-                      Update Stock
+                      Manage Stock
                     </Button>
                   )}
                 </CardContent>

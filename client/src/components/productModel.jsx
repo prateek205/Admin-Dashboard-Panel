@@ -20,8 +20,10 @@ import {
   CloudUpload as CloudUploadIcon,
   Category as CategoryIcon,
   Description as DescriptionIcon,
-  AttachMoney as AttachMoneyIcon,
+  CurrencyRupee as CurrencyRupeeIcon,
+  Numbers as NumbersIcon,
 } from '@mui/icons-material';
+import CurrencyInput from '../components/currencyInput';
 import axios from 'axios';
 
 const categories = [
@@ -81,7 +83,7 @@ const AddProductModal = ({ open, onClose, onProductAdded }) => {
     setError('');
 
     const formDataToSend = new FormData();
-    Object.keys(formData).forEach((key) => {
+    Object.keys(formData).forEach(key => {
       formDataToSend.append(key, formData[key]);
     });
     if (image) {
@@ -91,10 +93,10 @@ const AddProductModal = ({ open, onClose, onProductAdded }) => {
     try {
       await axios.post('/api/products', formDataToSend, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+          'Content-Type': 'multipart/form-data'
+        }
       });
-
+      
       onProductAdded();
       handleClose();
     } catch (error) {
@@ -136,6 +138,7 @@ const AddProductModal = ({ open, onClose, onProductAdded }) => {
                 startAdornment: <DescriptionIcon sx={{ mr: 1, color: 'text.secondary' }} />,
               }}
             />
+            
             <TextField
               fullWidth
               label="Description"
@@ -144,9 +147,10 @@ const AddProductModal = ({ open, onClose, onProductAdded }) => {
               onChange={handleChange}
               margin="normal"
               multiline
-              rows={4}
+              rows={3}
               required
             />
+            
             <Box sx={{ mt: 2 }}>
               <Typography variant="body2" color="textSecondary" gutterBottom>
                 Select Category
@@ -203,6 +207,7 @@ const AddProductModal = ({ open, onClose, onProductAdded }) => {
                 PNG, JPG, GIF up to 5MB
               </Typography>
             </Paper>
+            
             {imagePreview && (
               <Box mt={3}>
                 <Typography variant="body2" color="textSecondary" gutterBottom>
@@ -226,19 +231,14 @@ const AddProductModal = ({ open, onClose, onProductAdded }) => {
       case 2:
         return (
           <Box>
-            <TextField
-              fullWidth
+            <CurrencyInput
               label="Price"
               name="price"
-              type="number"
               value={formData.price}
               onChange={handleChange}
-              margin="normal"
               required
-              InputProps={{
-                startAdornment: <AttachMoneyIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-              }}
             />
+            
             <TextField
               fullWidth
               label="Stock Quantity"
@@ -248,6 +248,10 @@ const AddProductModal = ({ open, onClose, onProductAdded }) => {
               onChange={handleChange}
               margin="normal"
               required
+              InputProps={{
+                startAdornment: <NumbersIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                inputProps: { min: 0 }
+              }}
             />
           </Box>
         );
@@ -296,13 +300,20 @@ const AddProductModal = ({ open, onClose, onProductAdded }) => {
                       variant="contained"
                       onClick={index === steps.length - 1 ? handleSubmit : handleNext}
                       disabled={
+                        loading ||
                         (index === 0 && (!formData.name || !formData.description || !formData.category)) ||
                         (index === 1 && !image) ||
                         (index === 2 && (!formData.price || !formData.stock))
                       }
                       sx={{ mr: 1 }}
                     >
-                      {index === steps.length - 1 ? 'Add Product' : 'Continue'}
+                      {loading ? (
+                        <CircularProgress size={24} />
+                      ) : index === steps.length - 1 ? (
+                        'Add Product'
+                      ) : (
+                        'Continue'
+                      )}
                     </Button>
                     <Button
                       disabled={index === 0}
@@ -331,12 +342,6 @@ const AddProductModal = ({ open, onClose, onProductAdded }) => {
             <Alert severity="error" sx={{ mt: 2 }}>
               {error}
             </Alert>
-          )}
-
-          {loading && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-              <CircularProgress />
-            </Box>
           )}
         </Box>
       </Box>

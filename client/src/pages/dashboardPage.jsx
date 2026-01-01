@@ -33,9 +33,12 @@ import {
   CheckCircle as CheckCircleIcon,
   Schedule as ScheduleIcon,
   Cancel as CancelIcon,
+  CurrencyRupee as CurrencyRupeeIcon,
 } from '@mui/icons-material';
 import Navbar from '../components/navbar';
 import AddProductModal from '../components/productModel';
+import { formatIndianRupees, formatDate } from '../utils/formatter';
+import PriceDisplay from '../components/priceDisplay';
 import axios from 'axios';
 
 const StatCard = ({ title, value, icon, change, color }) => (
@@ -127,7 +130,7 @@ const RecentOrders = ({ orders }) => (
                 </TableCell>
                 <TableCell>{order.date}</TableCell>
                 <TableCell>
-                  <Typography fontWeight={500}>${order.amount}</Typography>
+                  <PriceDisplay price={order.amount} fontWeight={500} />
                 </TableCell>
                 <TableCell>
                   <Chip
@@ -186,7 +189,7 @@ const TopProducts = ({ products }) => (
           />
           <Box display="flex" justifyContent="space-between" mt={0.5}>
             <Typography variant="caption" color="textSecondary">
-              Revenue: ${product.revenue}
+              Revenue: <PriceDisplay price={product.revenue} showIcon={false} />
             </Typography>
             <Typography variant="caption" color="textSecondary">
               {product.progress}% of total
@@ -202,7 +205,7 @@ const Dashboard = () => {
   const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({
-    revenue: '24,580',
+    revenue: '2,45,800',
     orders: '1,234',
     customers: '8,560',
     products: '456',
@@ -211,21 +214,21 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
 
-  // Mock data for demonstration
+  // Mock data with Indian pricing
   const recentOrders = [
-    { id: 'ORD-001', customer: 'John Doe', date: '2024-01-15', amount: 245.99, status: 'Completed' },
-    { id: 'ORD-002', customer: 'Jane Smith', date: '2024-01-15', amount: 120.50, status: 'Pending' },
-    { id: 'ORD-003', customer: 'Robert Johnson', date: '2024-01-14', amount: 89.99, status: 'Completed' },
-    { id: 'ORD-004', customer: 'Sarah Williams', date: '2024-01-14', amount: 456.75, status: 'Processing' },
-    { id: 'ORD-005', customer: 'Michael Brown', date: '2024-01-13', amount: 67.25, status: 'Completed' },
+    { id: 'ORD-001', customer: 'Rajesh Kumar', date: '2024-01-15', amount: 24599, status: 'Completed' },
+    { id: 'ORD-002', customer: 'Priya Sharma', date: '2024-01-15', amount: 12050, status: 'Pending' },
+    { id: 'ORD-003', customer: 'Amit Patel', date: '2024-01-14', amount: 8999, status: 'Completed' },
+    { id: 'ORD-004', customer: 'Sunita Singh', date: '2024-01-14', amount: 45675, status: 'Processing' },
+    { id: 'ORD-005', customer: 'Vikram Mehta', date: '2024-01-13', amount: 6725, status: 'Completed' },
   ];
 
   const topProducts = [
-    { id: 1, name: 'Wireless Headphones', sales: 234, revenue: 4680, progress: 75, color: '#6366f1' },
-    { id: 2, name: 'Smart Watch', sales: 189, revenue: 5670, progress: 60, color: '#10b981' },
-    { id: 3, name: 'Laptop Stand', sales: 156, revenue: 3120, progress: 50, color: '#f59e0b' },
-    { id: 4, name: 'USB-C Hub', sales: 98, revenue: 1470, progress: 30, color: '#ef4444' },
-    { id: 5, name: 'Phone Case', sales: 67, revenue: 1005, progress: 20, color: '#8b5cf6' },
+    { id: 1, name: 'Wireless Headphones', sales: 234, revenue: 468000, progress: 75, color: '#6366f1' },
+    { id: 2, name: 'Smart Watch', sales: 189, revenue: 567000, progress: 60, color: '#10b981' },
+    { id: 3, name: 'Laptop Stand', sales: 156, revenue: 312000, progress: 50, color: '#f59e0b' },
+    { id: 4, name: 'USB-C Hub', sales: 98, revenue: 147000, progress: 30, color: '#ef4444' },
+    { id: 5, name: 'Phone Case', sales: 67, revenue: 100500, progress: 20, color: '#8b5cf6' },
   ];
 
   useEffect(() => {
@@ -240,6 +243,17 @@ const Dashboard = () => {
     try {
       const response = await axios.get('/api/products');
       setProducts(response.data.products);
+      
+      // Calculate total revenue in Indian Rupees
+      const totalRevenue = response.data.products.reduce((sum, product) => {
+        return sum + (product.price * product.stock * 0.1); // Assuming 10% of stock sold
+      }, 0);
+      
+      setStats(prev => ({
+        ...prev,
+        revenue: formatIndianRupees(totalRevenue, { compact: true, showSymbol: false }),
+        products: response.data.products.length.toString(),
+      }));
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -279,8 +293,8 @@ const Dashboard = () => {
           <Grid item xs={12} sm={6} md={3}>
             <StatCard
               title="Total Revenue"
-              value={`$${stats.revenue}`}
-              icon={<AttachMoneyIcon />}
+              value={`₹${stats.revenue}`}
+              icon={<CurrencyRupeeIcon />}
               change={12.5}
               color="primary"
             />
@@ -372,9 +386,12 @@ const Dashboard = () => {
                           {product.description.substring(0, 60)}...
                         </Typography>
                         <Box display="flex" justifyContent="space-between" alignItems="center">
-                          <Typography variant="h6" color="primary" fontWeight={700}>
-                            ${product.price}
-                          </Typography>
+                          <PriceDisplay 
+                            price={product.price} 
+                            variant="h6" 
+                            fontWeight={700} 
+                            color="primary"
+                          />
                           <Chip
                             label={`Stock: ${product.stock}`}
                             size="small"
@@ -399,7 +416,7 @@ const Dashboard = () => {
               </Typography>
               <Box>
                 {[
-                  { time: '10:30 AM', activity: 'New order #ORD-009 received', user: 'John Doe' },
+                  { time: '10:30 AM', activity: 'New order #ORD-009 received', user: 'Rajesh Kumar' },
                   { time: '09:15 AM', activity: 'Product "Wireless Mouse" updated', user: 'You' },
                   { time: 'Yesterday', activity: '5 new customers registered', user: 'System' },
                   { time: 'Jan 13', activity: 'Monthly sales report generated', user: 'You' },

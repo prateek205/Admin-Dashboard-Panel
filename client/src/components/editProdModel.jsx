@@ -20,8 +20,10 @@ import {
   CloudUpload as CloudUploadIcon,
   Category as CategoryIcon,
   Description as DescriptionIcon,
-  AttachMoney as AttachMoneyIcon,
+  CurrencyRupee as CurrencyRupeeIcon,
+  Numbers as NumbersIcon,
 } from '@mui/icons-material';
+import CurrencyInput from '../components/currencyInput';
 import axios from 'axios';
 
 const categories = [
@@ -118,7 +120,6 @@ const EditProductModal = ({ open, onClose, product, onProductUpdated }) => {
       setSuccess('Product updated successfully!');
       onProductUpdated();
       
-      // Close modal after success
       setTimeout(() => {
         handleClose();
       }, 1500);
@@ -259,19 +260,14 @@ const EditProductModal = ({ open, onClose, product, onProductUpdated }) => {
       case 2:
         return (
           <Box>
-            <TextField
-              fullWidth
+            <CurrencyInput
               label="Price"
               name="price"
-              type="number"
               value={formData.price}
               onChange={handleChange}
-              margin="normal"
               required
-              InputProps={{
-                startAdornment: <AttachMoneyIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-              }}
             />
+            
             <TextField
               fullWidth
               label="Stock Quantity"
@@ -281,6 +277,10 @@ const EditProductModal = ({ open, onClose, product, onProductUpdated }) => {
               onChange={handleChange}
               margin="normal"
               required
+              InputProps={{
+                startAdornment: <NumbersIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+                inputProps: { min: 0 }
+              }}
             />
           </Box>
         );

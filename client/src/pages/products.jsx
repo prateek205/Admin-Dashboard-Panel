@@ -50,12 +50,14 @@ import {
   Inventory2 as Inventory2Icon,
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
+  CurrencyRupee as CurrencyRupeeIcon,
 } from '@mui/icons-material';
 import Navbar from '../components/navbar';
 import AddProductModal from '../components/productModel';
 import EditProductModal from '../components/editProdModel';
+import PriceDisplay from '../components/priceDisplay';
+import { formatDate } from '../utils/formatter';
 import axios from 'axios';
-import { format } from 'date-fns';
 
 const Products = () => {
   const { user, isAdmin } = useAuth();
@@ -85,6 +87,7 @@ const Products = () => {
     active: 0,
     lowStock: 0,
     outOfStock: 0,
+    totalValue: 0,
   });
 
   const categories = [
@@ -136,8 +139,9 @@ const Products = () => {
       const active = productsData.filter(p => p.stock > 10).length;
       const lowStock = productsData.filter(p => p.stock > 0 && p.stock <= 10).length;
       const outOfStock = productsData.filter(p => p.stock === 0).length;
+      const totalValue = productsData.reduce((sum, product) => sum + (product.price * product.stock), 0);
       
-      setStats({ total, active, lowStock, outOfStock });
+      setStats({ total, active, lowStock, outOfStock, totalValue });
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -379,14 +383,18 @@ const Products = () => {
                   <Box display="flex" justifyContent="space-between" alignItems="center">
                     <Box>
                       <Typography color="textSecondary" variant="body2">
-                        Out of Stock
+                        Inventory Value
                       </Typography>
-                      <Typography variant="h4" fontWeight={700} color="error.main">
-                        {stats.outOfStock}
-                      </Typography>
+                      <PriceDisplay 
+                        price={stats.totalValue} 
+                        variant="h4" 
+                        fontWeight={700} 
+                        color="info.main"
+                        compact
+                      />
                     </Box>
-                    <Avatar sx={{ bgcolor: 'error.light', color: 'error.main' }}>
-                      <CancelIcon />
+                    <Avatar sx={{ bgcolor: 'info.light', color: 'info.main' }}>
+                      <CurrencyRupeeIcon />
                     </Avatar>
                   </Box>
                 </CardContent>
@@ -557,9 +565,10 @@ const Products = () => {
                             />
                           </TableCell>
                           <TableCell>
-                            <Typography fontWeight={600}>
-                              ${product.price.toFixed(2)}
-                            </Typography>
+                            <PriceDisplay 
+                              price={product.price} 
+                              fontWeight={600} 
+                            />
                           </TableCell>
                           <TableCell>
                             <Typography fontWeight={600}>
@@ -577,10 +586,13 @@ const Products = () => {
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2">
-                              {format(new Date(product.createdAt), 'MMM dd, yyyy')}
+                              {formatDate(product.createdAt)}
                             </Typography>
                             <Typography variant="caption" color="textSecondary">
-                              {format(new Date(product.createdAt), 'hh:mm a')}
+                              {new Date(product.createdAt).toLocaleTimeString('en-IN', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
                             </Typography>
                           </TableCell>
                           <TableCell align="center">
@@ -708,6 +720,16 @@ const Products = () => {
             Are you sure you want to delete "
             <strong>{productToDelete?.name}</strong>"?
           </Typography>
+          {productToDelete && (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="body2" color="textSecondary">
+                Price: <PriceDisplay price={productToDelete.price} showIcon={false} />
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Stock: {productToDelete.stock} units
+              </Typography>
+            </Box>
+          )}
           {productToDelete?.image && (
             <Box
               component="img"
