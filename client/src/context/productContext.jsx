@@ -4,7 +4,7 @@ import axios from "axios";
 
 import { useAuth } from "./authContext"; // Import auth hook
 
-const API_BASE_PRODUCTS = import.meta.env.API_BASE_PRODUCTS
+const API_BASE_PRODUCTS = import.meta.env.VITE_BASE_PRODUCTS
 
 const ProductContext = createContext();
 
