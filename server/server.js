@@ -5,50 +5,63 @@ const path = require("path");
 const connectDB = require("./config/db");
 const fs = require("fs");
 
-// Load environment variables
 dotenv.config();
-
-// Connect to database
 connectDB();
 
 const app = express();
 
-// Middleware
+/* =======================
+   CORS CONFIG (FIXED)
+   ======================= */
 
-app.use(
-  cors({
-    origin:process.env.CLIENT_URL,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: process.env.CLIENT_URL, // EXACT match, no trailing slash
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
 
-// IMPORTANT: Handle preflight requests
-app.options("*", cors());
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // 🔥 THIS IS THE FIX
+
+/* =======================
+   BODY PARSER
+   ======================= */
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+/* =======================
+   ROUTES
+   ======================= */
+
 app.use("/api/auth", require("./routes/authRoute"));
 app.use("/api/products", require("./routes/productRoute"));
 
-// Serve static files from uploads directory
+/* =======================
+   STATIC UPLOADS
+   ======================= */
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 if (!fs.existsSync("uploads")) {
   fs.mkdirSync("uploads");
 }
 
-// Error handling middleware
+/* =======================
+   ERROR HANDLER
+   ======================= */
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: "Something went wrong!" });
 });
 
-const PORT = process.env.PORT || 5000;
+/* =======================
+   START SERVER
+   ======================= */
 
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
