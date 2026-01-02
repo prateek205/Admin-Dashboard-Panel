@@ -3,7 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 const connectDB = require('./config/db');
-import fs from "fs";
+const fs = require('fs');
 
 // Load environment variables
 dotenv.config();
