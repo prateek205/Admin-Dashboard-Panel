@@ -4,6 +4,8 @@ import axios from "axios";
 
 import { useAuth } from "./authContext"; // Import auth hook
 
+const API_BASE_PRODUCTS = import.meta.env.API_BASE_PRODUCTS
+
 const ProductContext = createContext();
 
 export const useProducts = () => {
@@ -25,7 +27,7 @@ export const ProductProvider = ({ children }) => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("/api/products");
+      const response = await axios.get(API_BASE_PRODUCTS);
 
       let productsArray = [];
       if (Array.isArray(response.data)) {
@@ -59,7 +61,7 @@ export const ProductProvider = ({ children }) => {
     }
 
     try {
-      const response = await axios.post("/api/products", formData, {
+      const response = await axios.post(API_BASE_PRODUCTS, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`, // Use token from auth
@@ -102,7 +104,7 @@ export const ProductProvider = ({ children }) => {
     }
 
     try {
-      const response = await axios.put(`/api/products/${id}`, formData, {
+      const response = await axios.put(`${API_BASE_PRODUCTS}/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`, // Use token from auth
@@ -135,7 +137,7 @@ export const ProductProvider = ({ children }) => {
   // Delete product
   const deleteProduct = async (id) => {
     try {
-      await axios.delete(`/api/products/${id}`, {
+      await axios.delete(`${API_BASE_PRODUCTS}/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Use token from auth
         },
