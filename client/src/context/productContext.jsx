@@ -2,7 +2,9 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
 
-import { useAuth } from "./authContext"; // Import auth hook
+import { useAuth } from "./authContext"; 
+
+const API = import.meta.env.VITE_BASE
 
 const ProductContext = createContext();
 
@@ -25,7 +27,7 @@ export const ProductProvider = ({ children }) => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("/products");
+      const response = await axios.get(`${API}/api/products`);
 
       let productsArray = [];
       if (Array.isArray(response.data)) {
@@ -63,7 +65,7 @@ export const ProductProvider = ({ children }) => {
     }
 
     try {
-      const response = await axios.post("/products", formData, {
+      const response = await axios.post(`${API}/api/products`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`, // Use token from auth
@@ -106,7 +108,7 @@ export const ProductProvider = ({ children }) => {
     }
 
     try {
-      const response = await axios.put(`/products/${id}`, formData, {
+      const response = await axios.put(`${API}/api/products/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`, // Use token from auth
@@ -139,7 +141,7 @@ export const ProductProvider = ({ children }) => {
   // Delete product
   const deleteProduct = async (id) => {
     try {
-      await axios.delete(`/products/${id}`, {
+      await axios.delete(`${API}/api/products/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Use token from auth
         },

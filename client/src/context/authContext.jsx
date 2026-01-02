@@ -3,6 +3,8 @@ import axios from "axios";
 
 const AuthContext = createContext();
 
+const VITE_BASE_API = import.meta.env.VITE_BASE
+
 export const useAuth = () => {
   return useContext(AuthContext);
 };
@@ -25,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get("api/auth/me");
+      const response = await axios.get(`${VITE_BASE_API}/api/auth/me`);
       setUser(response.data.user);
     } catch (error) {
       localStorage.removeItem("token");
@@ -38,7 +40,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setError("");
-      const response = await axios.post("api/auth/register", userData);
+      const response = await axios.post(`${VITE_BASE_API}/api/auth/register`, userData);
       const { token, user } = response.data;
 
       localStorage.setItem("token", token);
@@ -55,7 +57,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       setError("");
-      const response = await axios.post("api/auth/login", credentials);
+      const response = await axios.post(`${VITE_BASE_API}/api/auth/login`, credentials);
       const { token, user } = response.data;
 
       localStorage.setItem("token", token);
