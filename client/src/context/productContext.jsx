@@ -1,5 +1,5 @@
 // client/src/context/ProductContext.jsx
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
 
 import { useAuth } from "./authContext"; // Import auth hook
@@ -47,6 +47,10 @@ export const ProductProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   // Create new product
   const createProduct = async (productData, imageFile) => {
