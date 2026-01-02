@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`${API_BASE_AUTH}/auth/me`);
+      const response = await axios.get(`${API_BASE_AUTH}/me`);
       setUser(response.data.user);
     } catch (error) {
       localStorage.removeItem('token');
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setError('');
-      const response = await axios.post(`${API_BASE_AUTH}/auth/register`, userData);
+      const response = await axios.post(`${API_BASE_AUTH}/register`, userData);
       const { token, user } = response.data;
       
       localStorage.setItem('token', token);
@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       setError('');
-      const response = await axios.post(`${API_BASE_AUTH}/auth/login`, credentials);
+      const response = await axios.post(`${API_BASE_AUTH}/login`, credentials);
       const { token, user } = response.data;
       
       localStorage.setItem('token', token);
