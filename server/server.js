@@ -19,8 +19,11 @@ app.use(cors({
     "http://localhost:5173",
     "https://admin-dashboard-panel-iota.vercel.app/"
   ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
+app.options("*", cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
