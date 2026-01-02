@@ -6,6 +6,8 @@ import { useAuth } from "./authContext"; // Import auth hook
 
 const API_BASE_PRODUCTS = import.meta.env.VITE_BASE_PRODUCTS
 
+console.log("API_BASE_PRODUCTS:", API_BASE_PRODUCTS);
+
 const ProductContext = createContext();
 
 export const useProducts = () => {
